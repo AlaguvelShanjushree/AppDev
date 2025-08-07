@@ -4,6 +4,7 @@ import com.example.demo.model.Customer;
 import com.example.demo.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,10 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     public Customer createCustomer(Customer customer) {
+        Optional<Customer> existing = customerRepository.findByEmail(customer.getEmail());
+        if (existing.isPresent()) {
+            throw new DataIntegrityViolationException("Email already exists");
+        }
         return customerRepository.save(customer);
     }
 
@@ -22,23 +27,8 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Optional<Customer> getCustomerById(Long id) {
-        return customerRepository.findById(id);
-    }
-
-    public Customer updateCustomer(Long id, Customer updatedCustomer) {
+    public Customer getCustomerById(Long id) {
         return customerRepository.findById(id)
-                .map(customer -> {
-                    customer.setFirstName(updatedCustomer.getFirstName());
-                    customer.setLastName(updatedCustomer.getLastName());
-                    customer.setEmail(updatedCustomer.getEmail());
-                    customer.setPhoneNumber(updatedCustomer.getPhoneNumber());
-                    customer.setCustomerType(updatedCustomer.getCustomerType());
-                    return customerRepository.save(customer);
-                }).orElse(null);
-    }
-
-    public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
+                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + id));
     }
 }

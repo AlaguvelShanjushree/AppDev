@@ -11,8 +11,7 @@ public class Admin {
 
     private String name;
     private String email;
-    private String password; // 🔑 Make sure this is included
-
+    private String password; 
     public Admin() {}
 
     public Admin(String name, String email, String password) {
@@ -21,7 +20,6 @@ public class Admin {
         this.password = password;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

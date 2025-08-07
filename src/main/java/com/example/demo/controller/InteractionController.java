@@ -2,39 +2,48 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Interaction;
 import com.example.demo.service.InteractionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/interactions")
+@RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class InteractionController {
+
     @Autowired
     private InteractionService interactionService;
 
-    @GetMapping
+    @PostMapping("/interactions")
+    public ResponseEntity<?> createInteraction(@Valid @RequestBody Interaction interaction) {
+        try {
+            Long customerId = interaction.getCustomer().getId();
+            Interaction saved = interactionService.createInteraction(customerId, interaction);
+            return ResponseEntity.status(201).body(saved);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
+        // Get all interactions
+    @GetMapping("/interactions")
     public List<Interaction> getAllInteractions() {
         return interactionService.getAllInteractions();
-    }
+}
 
-    @GetMapping("/customer/{customerId}")
-    public List<Interaction> getInteractionsByCustomerId(@PathVariable Long customerId) {
-        return interactionService.getInteractionsByCustomerId(customerId);
-    }
 
-    @PostMapping("/customer/{customerId}")
-    public Interaction createInteraction(@PathVariable Long customerId, @RequestBody Interaction interaction) {
-        return interactionService.createInteraction(customerId, interaction);
-    }
-
-    @PutMapping("/{id}")
-    public Interaction updateInteraction(@PathVariable Long id, @RequestBody Interaction interaction) {
-        return interactionService.updateInteraction(id, interaction);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteInteraction(@PathVariable Long id) {
-        interactionService.deleteInteraction(id);
+    @GetMapping("/customers/{customerId}/interactions")
+    public ResponseEntity<?> getInteractionsByCustomer(@PathVariable Long customerId) {
+        try {
+            List<Interaction> interactions = interactionService.getInteractionsByCustomerId(customerId);
+            return ResponseEntity.ok(interactions);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 }

@@ -1,10 +1,8 @@
 package com.example.demo.model;
 
 public enum InteractionType {
+    PURCHASE,
     INQUIRY,
     COMPLAINT,
-    SUGGESTION,
-    FEEDBACK,
-    FOLLOWUP,
-    SUPPORT
+    RETURN
 }

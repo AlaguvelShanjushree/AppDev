@@ -30,7 +30,7 @@ public class AdminService {
         if (admin != null) {
             admin.setName(updatedAdmin.getName());
             admin.setEmail(updatedAdmin.getEmail());
-            admin.setPassword(updatedAdmin.getPassword()); // ✅ Ensure password is updated
+            admin.setPassword(updatedAdmin.getPassword()); 
             return adminRepository.save(admin);
         }
         return null;
